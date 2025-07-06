@@ -1,0 +1,95 @@
+package com.shahar.stoxie.ui.main
+
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.shahar.stoxie.data.PostRepository
+import com.shahar.stoxie.models.Comment
+import com.shahar.stoxie.models.Post
+import com.shahar.stoxie.ui.adapters.PostUiModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+
+class FeedViewModel : ViewModel() {
+
+    private val postRepository = PostRepository()
+    private val firebaseAuth = FirebaseAuth.getInstance()
+
+    private val postsFlow = postRepository.getAllPosts()
+    private val commentsByPostId = MutableStateFlow<Map<String, List<Comment>>>(emptyMap())
+    private val expandedPostIds = MutableStateFlow<Set<String>>(emptySet())
+    private val commentFetchJobs = mutableMapOf<String, Job>()
+
+    val postUiModels: LiveData<List<PostUiModel>> = combine(
+        postsFlow,
+        commentsByPostId,
+        expandedPostIds
+    ) { posts, comments, expandedIds ->
+        posts.forEach { post ->
+            if (post.id in expandedIds && !commentFetchJobs.containsKey(post.id)) {
+                fetchCommentsForPost(post.id)
+            }
+        }
+        posts.map { post ->
+            PostUiModel(
+                post = post,
+                comments = comments[post.id] ?: emptyList(),
+                areCommentsVisible = post.id in expandedIds
+            )
+        }
+    }.asLiveData()
+
+    private fun fetchCommentsForPost(postId: String) {
+        commentFetchJobs[postId] = viewModelScope.launch {
+            postRepository.getCommentsForPost(postId).collect { comments ->
+                val currentCommentsMap = commentsByPostId.value.toMutableMap()
+                currentCommentsMap[postId] = comments
+                commentsByPostId.value = currentCommentsMap
+            }
+        }
+    }
+
+    fun onLikeClicked(post: Post) {
+        val userId = firebaseAuth.currentUser?.uid ?: return
+        viewModelScope.launch {
+            try {
+                postRepository.updateLikeStatus(post.id, userId, post.likedBy.contains(userId))
+            } catch (e: Exception) {
+                Log.e("FeedViewModel", "Error updating like status", e)
+            }
+        }
+    }
+
+    fun onAddCommentClicked(postId: String, commentText: String) {
+        viewModelScope.launch {
+            try {
+                postRepository.addCommentToPost(postId, commentText)
+            } catch (e: Exception) {
+                Log.e("FeedViewModel", "Error adding comment", e)
+            }
+        }
+    }
+
+    fun onToggleCommentsClicked(post: Post) {
+        val postId = post.id
+        val currentExpandedIds = expandedPostIds.value.toMutableSet()
+
+        if (postId in currentExpandedIds) {
+            currentExpandedIds.remove(postId)
+            commentFetchJobs[postId]?.cancel()
+            commentFetchJobs.remove(postId)
+        } else {
+            currentExpandedIds.add(postId)
+            // Fetch comments only when opening for the first time
+            if (!commentsByPostId.value.containsKey(postId)) {
+                fetchCommentsForPost(postId)
+            }
+        }
+        expandedPostIds.value = currentExpandedIds
+    }
+}

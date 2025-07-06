@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.Stoxie" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/stoxie_blue_500</item>
+        <item name="colorOnPrimary">@color/neutral_white</item>
+
+        <item name="colorSecondary">@color/stoxie_amber_500</item>
+        <item name="colorOnSecondary">@color/neutral_white</item>
+
+        <item name="android:colorBackground">@color/neutral_gray_100</item>
+        <item name="colorOnBackground">@color/neutral_text_primary</item>
+
+        <item name="colorSurface">@color/neutral_white</item>
+        <item name="colorOnSurface">@color/neutral_text_primary</item>
+
+        <item name="colorOnSurfaceVariant">@color/neutral_text_secondary</item>
+
+        <item name="colorError">@color/red_like</item>
+    </style>
+
+    <style name="Theme.Stoxie" parent="Base.Theme.Stoxie" />
+</resources>

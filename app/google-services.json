@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "660158844806",
+    "project_id": "stoxie-42d61",
+    "storage_bucket": "stoxie-42d61.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660158844806:android:af2a308f3a4870c552e607",
+        "android_client_info": {
+          "package_name": "com.shahar.stoxie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAokGeONCY8kDF6awKD9-7Qaqn87TBuvvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

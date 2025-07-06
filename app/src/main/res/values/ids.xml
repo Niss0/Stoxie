@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="rv_portfolio_stocks" type="id" />
+    <item name="pb_portfolio_loading" type="id" />
+</resources>

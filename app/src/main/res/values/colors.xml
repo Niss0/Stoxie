@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="stoxie_blue_500">#007AFF</color> <color name="stoxie_blue_700">#005ECB</color> <color name="stoxie_amber_500">#FF9500</color>
+
+    <color name="neutral_white">#FFFFFF</color>
+    <color name="neutral_black">#000000</color>
+    <color name="neutral_gray_50">#F9F9F9</color>  <color name="neutral_gray_100">#F0F0F0</color> <color name="neutral_gray_800">#2C2C2E</color> <color name="neutral_gray_900">#1C1C1E</color> <color name="neutral_text_primary">#000000</color>
+    <color name="neutral_text_secondary">#8A8A8E</color>
+
+    <color name="red_like">#E53935</color>
+    <color name="green_profit">#34C759</color>
+
+</resources>

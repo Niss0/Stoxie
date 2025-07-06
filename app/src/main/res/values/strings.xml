@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">Stoxie</string>
+    <string name="register_title">Create an Account</string>
+    <string name="register_name_hint">Name</string>
+    <string name="register_email_hint">Email</string>
+    <string name="register_password_hint">Password</string>
+    <string name="register_button">Register</string>
+    <string name="login_title">Welcome Back</string>
+    <string name="login_subtitle">Sign in to continue</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_register_link">Don\'t have an account? Register</string>
+    <string name="bottom_nav_bar_feed_title">Feed</string>
+    <string name="bottom_nav_bar_portfolio_title">Portfolio</string>
+    <string name="bottom_nav_bar_profile_title">Profile</string>
+    <string name="create_post_title">Create New Post</string>
+    <string name="create_post_text_hint">What\'s on your mind?</string>
+    <string name="create_post_publish_button_text">Publish</string>
+    <string name="post_item_comment_button">Comment</string>
+    <string name="post_comment">Post comment\t</string>
+    <string name="post_item_comment_button_text">Comment</string>
+    <string name="post_item_add_a_comment_hint">Add a comment...</string>
+    <string name="profile_posts_section_title">My Posts</string>
+    <string name="profile_btn_logout_text">Logout</string>
+    <string name="post_item_like_button_text">Like</string>
+    <string name="post_item_view_more_comments_button_text">View more comments</string>
+    <string name="portfolio_error_loading_data_msg">Error loading data.</string>
+    <string name="portfolio_add_stock_descrption">Add new stock to portfolio</string>
+    <string name="portfolio_title">My Portfolio</string>
+    <string name="feed_like_btn_text">Like</string>
+    <string name="feed_comment_btn_text">Comment</string>
+    <string name="profile_btn_edit_profile_text">Edit Profile</string>
+    <string name="my_portfolio_title_text">My Portfolio</string>
+    <string name="edit_profile_title_text">Edit Profile</string>
+    <string name="btn_change_photo_text">Change Photo</string>
+    <string name="edit_profile_name_hint">Name</string>
+    <string name="edit_profile_bio_hint">Bio</string>
+    <string name="edit_profile_save_changes_btn_text">Save Changes</string>
+    <string name="edit_profile_change_password_btn_text">Change Password</string>
+    <string name="comment_add_a_comment_hint">Add a comment...</string>
+    <string name="comments_send_comment_btn_description">Send comment</string>
+    <string name="add_stock_hint">Stock Symbol (e.g., GOOGL)</string>
+    <string name="number_of_shares_hint">Number of Shares</string>
+    <string name="price_per_share_hint">Price per Share</string>
+    <plurals name="post_like_count">
+        <item quantity="one">%d Like</item>
+        <item quantity="other">%d Likes</item>
+    </plurals>
+    <plurals name="post_comment_count">
+        <item quantity="one">%d Comment</item>
+        <item quantity="other">%d Comments</item>
+    </plurals>
+</resources>
