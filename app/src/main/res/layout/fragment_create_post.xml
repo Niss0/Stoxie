@@ -17,20 +17,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--
-        A TextInputLayout wrapping a multi-line EditText.
-        Setting gravity to 'top' ensures the hint and text start at the top
-        of the input area, which is standard for multi-line text fields.
-    -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_create_post_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
         android:hint="@string/create_post_text_hint"
-        app:layout_constraintBottom_toTopOf="@id/btn_create_post_publish"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_create_post_title">
@@ -38,9 +31,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_create_post_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="top"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            android:lines="8" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,7 +45,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/create_post_publish_button_text"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_create_post_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

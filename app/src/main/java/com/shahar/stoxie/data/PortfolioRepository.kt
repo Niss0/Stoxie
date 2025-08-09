@@ -12,13 +12,31 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
+/**
+ * Repository for portfolio operations.
+ * Manages user stock holdings with real-time updates and transaction safety.
+ */
 class PortfolioRepository {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    private fun getCurrentUserId(): String? = firebaseAuth.currentUser?.uid
+    /**
+     * Gets current authenticated user ID with logging.
+     * @return User ID or null if not authenticated
+     */
+    private fun getCurrentUserId(): String? {
+        val userId = firebaseAuth.currentUser?.uid
+        if (userId == null) {
+            Log.w("PortfolioRepository", "No authenticated user found")
+        }
+        return userId
+    }
 
+    /**
+     * Provides real-time flow of user's portfolio holdings.
+     * @return Flow of portfolio holdings or null if user not authenticated
+     */
     fun getPortfolioHoldingsFlow(): Flow<List<PortfolioHolding>>? {
         val userId = getCurrentUserId() ?: return null
         return firestore.collection("users").document(userId).collection("portfolio")
@@ -26,7 +44,14 @@ class PortfolioRepository {
             .map { snapshot -> snapshot.toObjects(PortfolioHolding::class.java) }
     }
 
-    // --- THIS IS THE NEW, CORRECTED FUNCTION ---
+    /**
+     * Adds stock to portfolio with atomic transaction handling.
+     * Updates existing holdings or creates new ones with proper cost averaging.
+     * @param symbol Stock symbol (converted to uppercase)
+     * @param companyName Company display name
+     * @param newShares Number of shares to add
+     * @param newPrice Price per share
+     */
     suspend fun addStockToPortfolio(symbol: String, companyName: String, newShares: Double, newPrice: Double) {
         val userId = getCurrentUserId() ?: return
         val docRef = firestore.collection("users").document(userId)
@@ -39,7 +64,7 @@ class PortfolioRepository {
                     val existingHolding = snapshot.toObject<PortfolioHolding>()
 
                     if (existingHolding != null) {
-                        // Stock exists, update it
+                        // Update existing position with cost averaging
                         val oldShares = existingHolding.shares
                         val oldAveragePrice = existingHolding.averageBuyPrice
 
@@ -52,7 +77,7 @@ class PortfolioRepository {
                         )
                         transaction.set(docRef, updatedHolding)
                     } else {
-                        // Stock doesn't exist, create a new one
+                        // Create new position
                         val newHolding = PortfolioHolding(
                             symbol = symbol.uppercase(),
                             companyName = companyName,
@@ -68,6 +93,10 @@ class PortfolioRepository {
         }
     }
 
+    /**
+     * Removes stock from user's portfolio.
+     * @param symbol Stock symbol to remove
+     */
     suspend fun removeStockFromPortfolio(symbol: String) {
         val userId = getCurrentUserId() ?: return
         withContext(Dispatchers.IO) {

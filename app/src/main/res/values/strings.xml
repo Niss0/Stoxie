@@ -40,6 +40,7 @@
     <string name="edit_profile_change_password_btn_text">Change Password</string>
     <string name="comment_add_a_comment_hint">Add a comment...</string>
     <string name="comments_send_comment_btn_description">Send comment</string>
+    <string name="bottom_nav_bar_search_title">Search</string>
     <string name="add_stock_hint">Stock Symbol (e.g., GOOGL)</string>
     <string name="number_of_shares_hint">Number of Shares</string>
     <string name="price_per_share_hint">Price per Share</string>

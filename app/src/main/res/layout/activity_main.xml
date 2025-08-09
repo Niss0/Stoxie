@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    Main Activity Layout - Single Activity Architecture
+    This layout implements a single activity pattern with navigation components.
+    The NavHostFragment handles fragment navigation while the BottomNavigationView
+    provides the main navigation interface.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,7 +14,12 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- The NavHostFragment now takes up the space ABOVE the BottomNavigationView -->
+    <!-- 
+        NavHostFragment - Navigation Container
+        This fragment container manages the navigation between different screens.
+        It uses the Navigation Component to handle fragment transactions and
+        maintains the back stack automatically.
+    -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -21,10 +32,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/nav_graph" />
 
-    <!--
-        NEW WIDGET: BottomNavigationView
-        This view is constrained to the bottom of the parent screen.
-        The `app:menu` attribute links it to the menu resource file we just created.
+    <!-- 
+        BottomNavigationView - Main Navigation Interface
+        This Material Design component provides the primary navigation interface.
+        It's constrained to the bottom of the screen and automatically handles
+        navigation state and visual feedback. The menu resource defines the
+        available navigation destinations.
     -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"

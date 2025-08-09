@@ -10,27 +10,29 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 /**
- * A Repository class that handles all data operations related to authentication.
+ * Repository for authentication operations.
+ * Handles user registration, login, logout, and password reset using Firebase.
  */
 class AuthRepository {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
+    /**
+     * Registers a new user with email and password.
+     * Creates both authentication account and user profile in Firestore.
+     */
     suspend fun registerUser(name: String, email: String, password: String): AuthResult {
         return withContext(Dispatchers.IO) {
-            // Step 1: Create the user in Firebase Authentication.
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
 
-            // Step 2: Save the user's profile to Firestore.
             val firebaseUser = authResult.user
                 ?: throw IllegalStateException("Firebase user is null after authentication.")
 
-            // --- UPDATE: Save the email address to the User object ---
             val newUser = User(
                 uid = firebaseUser.uid,
                 name = name,
-                email = email // Save the email here
+                email = email
             )
 
             firestore.collection("users").document(firebaseUser.uid).set(newUser).await()
@@ -39,16 +41,25 @@ class AuthRepository {
         }
     }
 
+    /**
+     * Authenticates existing user with email and password.
+     */
     suspend fun loginUser(email: String, password: String): AuthResult {
         return withContext(Dispatchers.IO) {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
         }
     }
 
+    /**
+     * Signs out the current user.
+     */
     fun logout() {
         firebaseAuth.signOut()
     }
 
+    /**
+     * Sends password reset email.
+     */
     suspend fun sendPasswordResetEmail(email: String) {
         withContext(Dispatchers.IO) {
             firebaseAuth.sendPasswordResetEmail(email).await()

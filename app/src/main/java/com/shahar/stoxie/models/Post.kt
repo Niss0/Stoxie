@@ -7,19 +7,16 @@ package com.shahar.stoxie.models
  * @property text The main content of the post.
  * @property authorId The 'uid' of the user who created this post. This is essential for linking the post back to its author.
  * @property timestamp The time the post was created, stored as milliseconds since the epoch. This allows us to sort posts chronologically.
- * @property authorName The name of the post's author. We store this directly in the post object to avoid having to do a separate database lookup for the user's name every time we display a post. This is a common optimization technique called "denormalization".
- * @property authorProfilePictureUrl The profile picture URL of the author. Also denormalized for the same reason as authorName.
+ * @property likedBy List of user IDs who liked this post.
+ * @property commentCount Number of comments on this post.
+ *
+ * NOTE: We no longer denormalize authorName or authorProfilePictureUrl. Always fetch the latest user info by authorId.
  */
-
 data class Post(
     val id: String = "",
     val text: String = "",
     val authorId: String = "",
     val timestamp: Long = 0L,
-    // Denormalized data for easy display in the RecyclerView
-    val authorName: String = "",
-    val authorProfilePictureUrl: String? = null,
     val likedBy: List<String> = emptyList(),
     val commentCount: Long = 0L
-
 )

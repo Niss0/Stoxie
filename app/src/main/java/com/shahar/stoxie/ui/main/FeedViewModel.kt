@@ -15,6 +15,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for social feed management.
+ * Handles posts, comments, likes, and comment expansion with lazy loading.
+ */
 class FeedViewModel : ViewModel() {
 
     private val postRepository = PostRepository()
@@ -25,16 +29,21 @@ class FeedViewModel : ViewModel() {
     private val expandedPostIds = MutableStateFlow<Set<String>>(emptySet())
     private val commentFetchJobs = mutableMapOf<String, Job>()
 
+    /**
+     * LiveData combining posts, comments, and expansion state.
+     */
     val postUiModels: LiveData<List<PostUiModel>> = combine(
         postsFlow,
         commentsByPostId,
         expandedPostIds
     ) { posts, comments, expandedIds ->
+        // Trigger comment fetching for newly expanded posts
         posts.forEach { post ->
             if (post.id in expandedIds && !commentFetchJobs.containsKey(post.id)) {
                 fetchCommentsForPost(post.id)
             }
         }
+        
         posts.map { post ->
             PostUiModel(
                 post = post,
@@ -44,6 +53,9 @@ class FeedViewModel : ViewModel() {
         }
     }.asLiveData()
 
+    /**
+     * Fetches comments for a specific post.
+     */
     private fun fetchCommentsForPost(postId: String) {
         commentFetchJobs[postId] = viewModelScope.launch {
             postRepository.getCommentsForPost(postId).collect { comments ->
@@ -54,6 +66,9 @@ class FeedViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Handles like/unlike functionality for posts.
+     */
     fun onLikeClicked(post: Post) {
         val userId = firebaseAuth.currentUser?.uid ?: return
         viewModelScope.launch {
@@ -65,6 +80,9 @@ class FeedViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Adds a new comment to a post.
+     */
     fun onAddCommentClicked(postId: String, commentText: String) {
         viewModelScope.launch {
             try {
@@ -75,21 +93,44 @@ class FeedViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Toggles comment visibility for a post.
+     * Implements lazy loading - comments only fetched when first expanded.
+     */
     fun onToggleCommentsClicked(post: Post) {
         val postId = post.id
         val currentExpandedIds = expandedPostIds.value.toMutableSet()
 
         if (postId in currentExpandedIds) {
+            // Collapse comments
             currentExpandedIds.remove(postId)
             commentFetchJobs[postId]?.cancel()
             commentFetchJobs.remove(postId)
         } else {
+            // Expand comments
             currentExpandedIds.add(postId)
-            // Fetch comments only when opening for the first time
             if (!commentsByPostId.value.containsKey(postId)) {
                 fetchCommentsForPost(postId)
             }
         }
         expandedPostIds.value = currentExpandedIds
+    }
+
+    /**
+     * Clears all feed data when user logs out.
+     */
+    fun clearFeedData() {
+        commentsByPostId.value = emptyMap()
+        expandedPostIds.value = emptySet()
+        commentFetchJobs.values.forEach { it.cancel() }
+        commentFetchJobs.clear()
+    }
+
+    /**
+     * Logs out and clears all cached feed data.
+     */
+    fun logout() {
+        clearFeedData()
+        // Note: AuthRepository logout is handled by ProfileViewModel
     }
 }

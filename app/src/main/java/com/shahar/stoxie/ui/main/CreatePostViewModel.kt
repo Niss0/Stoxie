@@ -9,7 +9,8 @@ import com.shahar.stoxie.data.PostRepository
 import kotlinx.coroutines.launch
 
 /**
- * A sealed class to represent the different states of the post creation process.
+ * States for post creation process.
+ * Manages UI feedback during post publishing operations.
  */
 sealed class CreatePostState {
     object Idle : CreatePostState()
@@ -18,19 +19,27 @@ sealed class CreatePostState {
     data class Error(val message: String) : CreatePostState()
 }
 
+/**
+ * ViewModel for post creation screen.
+ * Handles post validation, publishing, and state management.
+ */
 class CreatePostViewModel : ViewModel() {
 
     private val postRepository = PostRepository()
 
+    /**
+     * State management for post creation operations.
+     * Provides UI feedback during publishing process.
+     */
     private val _createPostState = MutableLiveData<CreatePostState>(CreatePostState.Idle)
     val createPostState: LiveData<CreatePostState> = _createPostState
 
     /**
-     * Called by the Fragment when the user clicks the "Publish" button.
-     * @param text The content of the post from the EditText.
+     * Handles post publishing from UI.
+     * Validates content and manages state transitions during publishing.
+     * @param text The post content to publish
      */
     fun onPublishClicked(text: String) {
-        // Simple validation to prevent empty posts.
         if (text.isBlank()) {
             _createPostState.value = CreatePostState.Error("Post cannot be empty.")
             return
@@ -49,7 +58,8 @@ class CreatePostViewModel : ViewModel() {
     }
 
     /**
-     * Resets the state to Idle after a Success or Error event has been handled by the UI.
+     * Resets post creation state after UI has processed the result.
+     * Called by Fragment to clear success/error states.
      */
     fun onStateHandled() {
         _createPostState.value = CreatePostState.Idle

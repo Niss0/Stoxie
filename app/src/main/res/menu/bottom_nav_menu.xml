@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_profile"
         android:title="@string/bottom_nav_bar_profile_title" />
 
+    <item
+        android:id="@+id/searchFragment"
+        android:icon="@drawable/ic_search"
+        android:title="@string/bottom_nav_bar_search_title" />
+
 </menu>

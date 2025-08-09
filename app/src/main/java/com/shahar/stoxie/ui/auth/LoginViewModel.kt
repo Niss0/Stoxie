@@ -1,4 +1,5 @@
 package com.shahar.stoxie.ui.auth
+
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,8 +12,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * A sealed class to represent the different states of the login process.
- * This ensures our UI handles every possible outcome explicitly.
+ * Represents the possible states of the login process, ensuring the UI
+ * can reactively handle every outcome.
  */
 sealed class LoginState {
     object Idle : LoginState()
@@ -21,42 +22,43 @@ sealed class LoginState {
     data class Error(val message: String) : LoginState()
 }
 
+/**
+ * The ViewModel for the [LoginFragment]. It handles the business logic for user login
+ * and manages the state of the login screen.
+ */
 class LoginViewModel : ViewModel() {
 
     private val authRepository = AuthRepository()
 
-    // The private MutableLiveData that holds the current state.
+    // Private MutableLiveData to hold the current login state.
     private val _loginState = MutableLiveData<LoginState>(LoginState.Idle)
-    // The public LiveData that the Fragment will observe.
+    // Public LiveData that the Fragment observes for UI updates.
     val loginState: LiveData<LoginState> = _loginState
 
     /**
-     * Called by the LoginFragment when the user clicks the login button.
+     * Initiates the login process when the user clicks the login button.
+     * @param email The user's email.
+     * @param password The user's password.
      */
     fun onLoginClicked(email: String, password: String) {
-        // Basic validation
+        // Basic validation for email and password fields.
         if (email.isBlank() || password.isBlank()) {
             _loginState.value = LoginState.Error("Email and password cannot be empty.")
             return
         }
 
-        // Launch a coroutine in the viewModelScope. It will be automatically
-        // cancelled if the ViewModel is destroyed.
+        // Launch a coroutine for the login network operation.
         viewModelScope.launch {
-            // Set the state to Loading before starting the background operation.
             _loginState.value = LoginState.Loading
             try {
                 Log.d("LoginViewModel", "Calling authRepository.loginUser...")
-                // The repository will switch to a background thread for this call.
                 val authResult = authRepository.loginUser(email, password)
                 Log.d("LoginViewModel", "authRepository.loginUser call finished.")
 
-                // After the background work is done, switch back to the main thread
-                // to safely update the LiveData.
+                // Switch back to the main thread to update LiveData.
                 withContext(Dispatchers.Main) {
                     _loginState.value = LoginState.Success(authResult.user!!)
                 }
-
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "An exception occurred during login", e)
                 withContext(Dispatchers.Main) {

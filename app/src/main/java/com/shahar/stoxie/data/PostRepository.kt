@@ -15,11 +15,20 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
+/**
+ * Repository for social post operations.
+ * Handles post creation, retrieval, likes, and comments using Firestore.
+ */
 class PostRepository {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance()
 
+    /**
+     * Retrieves all posts in real-time with descending timestamp order.
+     * Uses Firestore snapshot listener for live updates.
+     * @return Flow of all posts with document IDs
+     */
     fun getAllPosts(): Flow<List<Post>> = callbackFlow {
         val postsCollection = firestore.collection("posts")
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -46,9 +55,15 @@ class PostRepository {
         }
     }
 
+    /**
+     * Retrieves posts for a specific user in real-time.
+     * Filters posts by author ID and orders by timestamp.
+     * @param userId The user ID to filter posts by
+     * @return Flow of user's posts with document IDs
+     */
     fun getPostsForUser(userId: String): Flow<List<Post>> = callbackFlow {
         val postsCollection = firestore.collection("posts")
-            .whereEqualTo("authorId", userId) // The key difference is this line
+            .whereEqualTo("authorId", userId)
             .orderBy("timestamp", Query.Direction.DESCENDING)
 
         val listener = postsCollection.addSnapshotListener { snapshot, error ->
@@ -73,6 +88,12 @@ class PostRepository {
         }
     }
 
+    /**
+     * Creates a new post for the current authenticated user.
+     * Fetches user profile and creates post with current timestamp.
+     * @param postText The content of the post to create
+     * @throws IllegalStateException if user is not logged in or profile not found
+     */
     suspend fun createPost(postText: String) {
         withContext(Dispatchers.IO) {
             val firebaseUser = firebaseAuth.currentUser
@@ -85,8 +106,6 @@ class PostRepository {
             val newPost = Post(
                 text = postText,
                 authorId = author.uid,
-                authorName = author.name,
-                authorProfilePictureUrl = author.profilePictureUrl,
                 timestamp = System.currentTimeMillis(),
                 likedBy = emptyList()
             )
@@ -95,6 +114,12 @@ class PostRepository {
         }
     }
 
+    /**
+     * Updates like status for a post by adding/removing user ID from likedBy array.
+     * @param postId The ID of the post to update
+     * @param userId The ID of the user liking/unliking
+     * @param isCurrentlyLiked Whether the user currently likes the post
+     */
     suspend fun updateLikeStatus(postId: String, userId: String, isCurrentlyLiked: Boolean) {
         withContext(Dispatchers.IO) {
             val postRef = firestore.collection("posts").document(postId)
@@ -106,6 +131,12 @@ class PostRepository {
         }
     }
 
+    /**
+     * Retrieves comments for a specific post in real-time.
+     * Orders comments by timestamp in ascending order.
+     * @param postId The ID of the post to get comments for
+     * @return Flow of comments with document IDs
+     */
     fun getCommentsForPost(postId: String): Flow<List<Comment>> = callbackFlow {
         val commentsCollection = firestore.collection("posts").document(postId).collection("comments")
             .orderBy("timestamp", Query.Direction.ASCENDING)
@@ -125,6 +156,13 @@ class PostRepository {
         awaitClose { listener.remove() }
     }
 
+    /**
+     * Adds a comment to a specific post using Firestore transaction.
+     * Ensures both comment creation and post comment count update succeed together.
+     * @param postId The ID of the post to comment on
+     * @param commentText The text content of the comment
+     * @throws IllegalStateException if user is not logged in or profile not found
+     */
     suspend fun addCommentToPost(postId: String, commentText: String) {
         withContext(Dispatchers.IO) {
             val firebaseUser = firebaseAuth.currentUser
@@ -142,10 +180,8 @@ class PostRepository {
                 timestamp = System.currentTimeMillis()
             )
 
-            // Get a reference to the post document
             val postRef = firestore.collection("posts").document(postId)
 
-            // Use a transaction to ensure both operations succeed or fail together
             firestore.runTransaction { transaction ->
                 val newCommentRef = postRef.collection("comments").document()
                 transaction.set(newCommentRef, newComment)

@@ -1,0 +1,20 @@
+# Local Properties Template
+# Copy this file to 'local.properties' and fill in your actual API keys
+# 
+# IMPORTANT: Never commit local.properties to version control!
+# This file is already included in .gitignore
+
+# Finnhub API Key
+# Get your free API key at: https://finnhub.io/
+# Free tier provides: 60 API calls per minute
+FINNHUB_API_KEY=your_finnhub_api_key_here
+
+# Alpha Vantage API Key  
+# Get your free API key at: https://www.alphavantage.co/support/#api-key
+# Free tier provides: 5 API calls per minute, 500 calls per day
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key_here
+
+# Example of what your actual local.properties should look like:
+# FINNHUB_API_KEY=abc123xyz789
+# ALPHA_VANTAGE_API_KEY=def456uvw012
+

@@ -45,6 +45,22 @@ class EditProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Handle image selection
+        binding.ivEditProfileAvatar.setOnClickListener { pickImageLauncher.launch("image/*") }
+        binding.tvChangePhoto.setOnClickListener { pickImageLauncher.launch("image/*") }
+
+        // Handle Save Changes
+        binding.btnSaveProfile.setOnClickListener {
+            val name = binding.etEditName.text.toString().trim()
+            val bio = binding.etEditBio.text.toString().trim()
+            viewModel.onSaveChangesClicked(name, bio)
+        }
+
+        // Handle Change Password
+        binding.btnChangePassword.setOnClickListener {
+            showChangePasswordDialog()
+        }
+
         // Observe user data to populate the fields
         viewModel.user.observe(viewLifecycleOwner) { user ->
             user?.let {
@@ -63,22 +79,6 @@ class EditProfileFragment : Fragment() {
             }
         }
 
-        // Handle image selection
-        binding.ivEditProfileAvatar.setOnClickListener { pickImageLauncher.launch("image/*") }
-        binding.tvChangePhoto.setOnClickListener { pickImageLauncher.launch("image/*") }
-
-        // Handle Save Changes
-        binding.btnSaveProfile.setOnClickListener {
-            val name = binding.etEditName.text.toString().trim()
-            val bio = binding.etEditBio.text.toString().trim()
-            viewModel.onSaveChangesClicked(name, bio)
-        }
-
-        // Handle Change Password
-        binding.btnChangePassword.setOnClickListener {
-            showChangePasswordDialog()
-        }
-
         // Observe the save state
         viewModel.editState.observe(viewLifecycleOwner) { state ->
             binding.pbEditProfileLoading.isVisible = state is EditProfileState.Loading
@@ -87,7 +87,7 @@ class EditProfileFragment : Fragment() {
             when (state) {
                 is EditProfileState.Success -> {
                     Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack()
+                    // Don't navigate back immediately - let user see the updated photo
                     viewModel.onStateHandled()
                 }
                 is EditProfileState.Error -> {
@@ -99,6 +99,23 @@ class EditProfileFragment : Fragment() {
                     viewModel.onStateHandled()
                 }
                 else -> { /* Idle */ }
+            }
+        }
+
+        // Observe profile saved state to change button behavior
+        viewModel.isProfileSaved.observe(viewLifecycleOwner) { isSaved ->
+            if (isSaved) {
+                binding.btnSaveProfile.text = "Done"
+                binding.btnSaveProfile.setOnClickListener {
+                    findNavController().popBackStack()
+                }
+            } else {
+                binding.btnSaveProfile.text = getString(R.string.edit_profile_save_changes_btn_text)
+                binding.btnSaveProfile.setOnClickListener {
+                    val name = binding.etEditName.text.toString().trim()
+                    val bio = binding.etEditBio.text.toString().trim()
+                    viewModel.onSaveChangesClicked(name, bio)
+                }
             }
         }
     }

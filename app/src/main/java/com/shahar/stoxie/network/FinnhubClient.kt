@@ -3,11 +3,17 @@ package com.shahar.stoxie.network
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * Retrofit client for Finnhub API.
+ * Singleton with lazy initialization for efficient resource usage.
+ */
 object FinnhubClient {
 
     private const val BASE_URL = "https://finnhub.io/api/v1/"
 
-    // Use 'lazy' to create the Retrofit instance only when it's first needed.
+    /**
+     * Retrofit instance with Gson converter for JSON parsing.
+     */
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -15,7 +21,9 @@ object FinnhubClient {
             .build()
     }
 
-    // Expose the ApiService to the rest of the app.
+    /**
+     * API service interface implementation.
+     */
     val api: FinnhubApiService by lazy {
         retrofit.create(FinnhubApiService::class.java)
     }

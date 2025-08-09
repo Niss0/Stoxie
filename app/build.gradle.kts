@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
 }
 
+
 android {
     namespace = "com.shahar.stoxie"
     compileSdk = 35
@@ -32,10 +33,18 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // Key for Finnhub (for search and company profiles)
         buildConfigField(
             "String",
             "FINNHUB_API_KEY",
             "\"${localProperties.getProperty("FINNHUB_API_KEY", "NO_KEY")}\""
+        )
+
+        // Key for Alpha Vantage (for chart data)
+        buildConfigField(
+            "String",
+            "ALPHA_VANTAGE_API_KEY",
+            "\"${localProperties.getProperty("ALPHA_VANTAGE_API_KEY", "NO_KEY")}\""
         )
     }
 

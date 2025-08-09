@@ -10,19 +10,21 @@ import com.shahar.stoxie.models.Comment
 import com.shahar.stoxie.util.TimeAgoFormatter
 
 /**
- * The Adapter for the comments RecyclerView.
- * It uses ListAdapter for efficient list updates.
+ * RecyclerView adapter for post comments.
+ * Uses ListAdapter for efficient list updates with DiffUtil.
  */
 class CommentAdapter : ListAdapter<Comment, CommentAdapter.CommentViewHolder>(CommentDiffCallback()) {
 
     /**
-     * The ViewHolder holds references to the views for a single comment item.
+     * ViewHolder for individual comment items.
      */
     inner class CommentViewHolder(private val binding: ListItemCommentBinding) : RecyclerView.ViewHolder(binding.root) {
+        /**
+         * Binds comment data to views.
+         */
         fun bind(comment: Comment) {
             binding.tvCommentAuthorName.text = comment.authorName
             binding.tvCommentText.text = comment.text
-            // Use our time utility to format the timestamp
             binding.tvCommentTimestamp.text = TimeAgoFormatter.getTimeAgo(comment.timestamp)
         }
     }
@@ -42,7 +44,7 @@ class CommentAdapter : ListAdapter<Comment, CommentAdapter.CommentViewHolder>(Co
 }
 
 /**
- * DiffUtil callback to help ListAdapter determine what has changed in the list.
+ * DiffUtil callback for efficient comment list updates.
  */
 class CommentDiffCallback : DiffUtil.ItemCallback<Comment>() {
     override fun areItemsTheSame(oldItem: Comment, newItem: Comment): Boolean {

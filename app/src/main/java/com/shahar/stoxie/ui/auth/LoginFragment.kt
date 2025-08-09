@@ -14,16 +14,20 @@ import com.shahar.stoxie.R
 import com.shahar.stoxie.databinding.FragmentLoginBinding
 
 /**
- * The Fragment responsible for displaying the user login UI.
- * This is the 'View' in our MVVM architecture for the login feature.
+ * Fragment for user authentication login screen.
+ * Provides email/password login and navigation to registration.
  */
 class LoginFragment : Fragment() {
 
-    // View Binding for safe access to the layout views.
+    /**
+     * View binding for safe view access.
+     */
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    // Get a reference to the LoginViewModel using the 'by viewModels()' delegate.
+    /**
+     * ViewModel for login business logic and state management.
+     */
     private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
@@ -36,25 +40,35 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupClickListeners()
+        observeViewModel()
+    }
 
-        // Set up the click listener for the main login button.
+    /**
+     * Sets up click listeners for user interactions.
+     * Handles login submission and navigation to registration.
+     */
+    private fun setupClickListeners() {
         binding.btnLoginSubmit.setOnClickListener {
             val email = binding.etLoginEmail.text.toString().trim()
             val password = binding.etLoginPassword.text.toString().trim()
             viewModel.onLoginClicked(email, password)
         }
 
-        // Set up the click listener for the "Go to Register" text view.
         binding.tvLoginGoToRegister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
             Log.d("LoginFragment", "Navigate to RegisterFragment clicked.")
         }
+    }
 
-        // Observe the login state from the ViewModel to reactively update the UI.
+    /**
+     * Observes ViewModel LiveData for UI updates.
+     * Handles login state changes and navigation.
+     */
+    private fun observeViewModel() {
         viewModel.loginState.observe(viewLifecycleOwner) { state ->
             Log.d("LoginFragment", "State changed to: $state")
 
-            // Each 'when' branch completely defines the UI for that state.
             when (state) {
                 is LoginState.Loading -> {
                     binding.pbLoginLoading.isVisible = true
@@ -85,6 +99,6 @@ class LoginFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        _binding = null // Prevent memory leaks
     }
 }

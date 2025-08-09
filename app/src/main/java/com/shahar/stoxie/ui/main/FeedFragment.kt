@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.shahar.stoxie.R
 import com.shahar.stoxie.databinding.FragmentFeedBinding
 import com.shahar.stoxie.ui.adapters.PostAdapter
 
@@ -37,6 +39,11 @@ class FeedFragment : Fragment() {
         viewModel.postUiModels.observe(viewLifecycleOwner) { postUiModels ->
             binding.pbFeedLoading.isVisible = postUiModels.isNullOrEmpty()
             postAdapter.submitList(postUiModels)
+        }
+
+        binding.fabCreatePost.setOnClickListener {
+            // Use the action defined in nav_graph.xml to navigate
+            findNavController().navigate(R.id.action_feedFragment_to_createPostFragment)
         }
     }
 

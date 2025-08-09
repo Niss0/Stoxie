@@ -11,7 +11,10 @@ import kotlinx.coroutines.Dispatchers // Make sure Dispatchers is imported
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext // Make sure withContext is imported
 
-// A sealed class to represent the different states of the registration process.
+/**
+ * States for user registration process.
+ * Manages UI feedback during account creation operations.
+ */
 sealed class RegisterState {
     object Idle : RegisterState()
     object Loading : RegisterState()
@@ -19,13 +22,28 @@ sealed class RegisterState {
     data class Error(val message: String) : RegisterState()
 }
 
+/**
+ * ViewModel for user registration screen.
+ * Handles account creation, validation, and state management.
+ */
 class RegisterViewModel : ViewModel() {
 
     private val authRepository = AuthRepository()
 
+    /**
+     * State management for registration operations.
+     * Provides UI feedback during account creation process.
+     */
     private val _registerState = MutableLiveData<RegisterState>(RegisterState.Idle)
     val registerState: LiveData<RegisterState> = _registerState
 
+    /**
+     * Handles user registration from UI.
+     * Validates input and manages state transitions during registration.
+     * @param name The user's display name
+     * @param email The user's email address
+     * @param password The user's password
+     */
     fun onRegisterClicked(name: String, email: String, password: String) {
         if (name.isBlank() || email.isBlank() || password.isBlank()) {
             _registerState.value = RegisterState.Error("All fields are required.")
@@ -40,7 +58,6 @@ class RegisterViewModel : ViewModel() {
             _registerState.value = RegisterState.Loading
             try {
                 val authResult = authRepository.registerUser(name, email, password)
-                // Check if the user object is null, which can sometimes happen
                 if (authResult.user == null) {
                     Log.e("RegisterViewModel", "Firebase auth successful but user object is null.")
                     throw IllegalStateException("Firebase user is null after registration.")
@@ -49,9 +66,7 @@ class RegisterViewModel : ViewModel() {
                 withContext(Dispatchers.Main) {
                     _registerState.value = RegisterState.Success(authResult.user!!)
                 }
-
             } catch (e: Exception) {
-                // Log the full exception to see the exact error
                 Log.e("RegisterViewModel", "An exception occurred", e)
                 withContext(Dispatchers.Main) {
                     _registerState.value = RegisterState.Error(e.message ?: "An unknown error occurred.")
@@ -60,6 +75,10 @@ class RegisterViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Resets registration state after UI has processed the result.
+     * Called by Fragment to clear success/error states.
+     */
     fun onStateHandled() {
         _registerState.value = RegisterState.Idle
     }

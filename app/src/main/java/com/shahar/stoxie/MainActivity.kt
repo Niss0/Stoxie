@@ -7,6 +7,12 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.activity.OnBackPressedCallback
 import com.shahar.stoxie.databinding.ActivityMainBinding
 
+/**
+ * MainActivity - Single Activity Architecture
+ * 
+ * Hosts the NavHostFragment for navigation and manages the BottomNavigationView.
+ * Implements single activity pattern where all navigation is handled through fragments.
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -16,20 +22,30 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. Find the NavHostFragment from our layout.
+        setupNavigation()
+        setupBackButtonHandling()
+    }
+
+    /**
+     * Connects NavHostFragment with BottomNavigationView for seamless navigation.
+     * Menu item IDs must match fragment destination IDs for automatic navigation.
+     */
+    private fun setupNavigation() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        // 2. Get its NavController.
         val navController = navHostFragment.navController
 
-        // 3. This is the magic line. It automatically connects the BottomNavigationView
-        // to the NavController. It will handle switching fragments when you tap an icon
-        // because the menu item IDs match the fragment destination IDs.
+        // Connect BottomNavigationView to NavController for automatic navigation
         binding.bottomNavigationView.setupWithNavController(navController)
+    }
 
+    /**
+     * Disables back button to maintain app flow through bottom navigation.
+     */
+    private fun setupBackButtonHandling() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // By leaving this empty, we effectively disable the back button.
+                // Back button disabled - users must use bottom navigation
             }
         })
     }

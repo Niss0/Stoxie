@@ -1,13 +1,15 @@
 package com.shahar.stoxie.models
 
 /**
- * Represents a user in the application.
- * @property uid The unique identifier for the user, which comes directly from Firebase Authentication. This is the primary key.
- * @property name The display name of the user, provided during registration.
- * @property bio A short, optional biography that the user can set on their profile. It's nullable because it's not required.
- * @property profilePictureUrl The URL pointing to the user's profile image stored in Firebase Cloud Storage. Nullable as a user might not upload a picture.
+ * Represents a user in the application, storing their profile information.
+ * This data class is used to model user data retrieved from Firestore.
+ *
+ * @property uid The unique identifier for the user, sourced from Firebase Authentication. This serves as the primary key.
+ * @property name The display name of the user, as provided during the registration process.
+ * @property bio A short, optional biography that the user can set on their profile. It is nullable as it's not a required field.
+ * @property email The user's email address, used for login and communication.
+ * @property profilePictureUrl The URL pointing to the user's profile image stored in Firebase Cloud Storage. It is nullable, as a user might not have uploaded a picture.
  */
-
 data class User(
     val uid: String = "",
     val name: String = "",
@@ -15,4 +17,3 @@ data class User(
     val email: String = "",
     val profilePictureUrl: String? = null
 )
-

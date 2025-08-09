@@ -18,7 +18,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-// State definition remains the same
+/**
+ * Portfolio state for UI display.
+ */
 sealed class PortfolioState {
     data class Success(
         val stocks: List<Stock>,
@@ -32,20 +34,27 @@ sealed class PortfolioState {
     data class Error(val message: String) : PortfolioState()
 }
 
+/**
+ * ViewModel for portfolio management.
+ * Handles real-time portfolio calculations, chart data, and undo functionality.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PortfolioViewModel : ViewModel() {
 
     private val stockRepository = StockRepository()
     private val portfolioRepository = PortfolioRepository()
 
-    // NEW: This flow holds the item that is waiting for permanent deletion.
+    /**
+     * StateFlow for managing stocks pending deletion.
+     * Enables undo functionality by temporarily removing items from UI.
+     */
     private val _stockPendingDeletion = MutableStateFlow<Stock?>(null)
 
+    /**
+     * Main portfolio state flow combining database holdings with pending deletion state.
+     */
     val portfolioState = portfolioRepository.getPortfolioHoldingsFlow()
-        // Combine the database holdings with our temporary "pending deletion" state
         ?.combine(_stockPendingDeletion) { holdings, pendingDeletion ->
-            // If there's an item pending deletion, filter it out from the list
-            // before passing it to the rest of the flow.
             if (pendingDeletion != null) {
                 holdings.filter { it.symbol != pendingDeletion.symbol }
             } else {
@@ -60,6 +69,7 @@ class PortfolioViewModel : ViewModel() {
                 }
 
                 try {
+                    // Fetch real-time data for all stocks concurrently
                     val stocksWithDetails = holdings.map { holding ->
                         viewModelScope.async(Dispatchers.IO) {
                             val quote = stockRepository.getStockQuote(holding.symbol)
@@ -75,11 +85,13 @@ class PortfolioViewModel : ViewModel() {
                         }
                     }.awaitAll().filter { it.quote != null }
 
+                    // Calculate portfolio metrics
                     val totalCurrentValue = stocksWithDetails.sumOf { it.shares * (it.quote?.currentPrice ?: 0.0) }
                     val totalCostBasis = stocksWithDetails.sumOf { it.shares * it.averageBuyPrice }
                     val overallGainLoss = totalCurrentValue - totalCostBasis
                     val overallGainLossPercent = if (totalCostBasis > 0) (overallGainLoss / totalCostBasis) * 100 else 0.0
 
+                    // Generate allocation chart data
                     val allocationEntries = if (totalCurrentValue > 0) {
                         stocksWithDetails.map { stock ->
                             val holdingValue = stock.shares * (stock.quote?.currentPrice ?: 0.0)
@@ -89,6 +101,7 @@ class PortfolioViewModel : ViewModel() {
                         emptyList()
                     }
 
+                    // Generate sector chart data
                     val sectorValueMap = stocksWithDetails.groupBy { it.sector }
                         .mapValues { (_, stocks) -> stocks.sumOf { it.shares * (it.quote?.currentPrice ?: 0.0) } }
 
@@ -99,7 +112,6 @@ class PortfolioViewModel : ViewModel() {
                     } else {
                         emptyList()
                     }
-
 
                     emit(PortfolioState.Success(
                         stocks = stocksWithDetails,
@@ -118,6 +130,9 @@ class PortfolioViewModel : ViewModel() {
         }
         ?.asLiveData()
 
+    /**
+     * Adds a new stock to the portfolio.
+     */
     fun addStock(symbol: String, shares: Double, price: Double) = viewModelScope.launch {
         try {
             val profile = stockRepository.getCompanyProfile(symbol)
@@ -128,19 +143,28 @@ class PortfolioViewModel : ViewModel() {
         }
     }
 
-    // --- NEW STATE MANAGEMENT FUNCTIONS ---
+    // --- Undo functionality methods ---
 
-    // Called from onSwiped. It just sets the state. Does NOT delete from DB.
+    /**
+     * Called when stock is swiped for deletion.
+     * Sets pending deletion state without deleting from database.
+     */
     fun onStockSwiped(stock: Stock) {
         _stockPendingDeletion.value = stock
     }
 
-    // Called from Snackbar "Undo" action.
+    /**
+     * Called when user taps "Undo" in Snackbar.
+     * Clears pending deletion state.
+     */
     fun cancelDeletion() {
         _stockPendingDeletion.value = null
     }
 
-    // Called when Snackbar dismisses. This is the only place we permanently delete.
+    /**
+     * Called when Snackbar dismisses automatically.
+     * Permanently deletes from database.
+     */
     fun confirmDeletion() {
         viewModelScope.launch {
             _stockPendingDeletion.value?.let { stockToDelete ->
@@ -148,5 +172,20 @@ class PortfolioViewModel : ViewModel() {
             }
             _stockPendingDeletion.value = null
         }
+    }
+
+    /**
+     * Clears all portfolio data when user logs out.
+     */
+    fun clearPortfolioData() {
+        _stockPendingDeletion.value = null
+    }
+
+    /**
+     * Logs out and clears all cached portfolio data.
+     */
+    fun logout() {
+        clearPortfolioData()
+        // Note: AuthRepository logout is handled by ProfileViewModel
     }
 }

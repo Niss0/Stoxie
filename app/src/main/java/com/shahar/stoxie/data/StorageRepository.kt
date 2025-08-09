@@ -8,22 +8,28 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
+/**
+ * Repository for Firebase Storage operations.
+ * Handles file uploads with automatic authentication checks.
+ */
 class StorageRepository {
 
     private val storage = FirebaseStorage.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    /**
+     * Uploads profile image to Firebase Storage.
+     * @param imageUri Local URI of the image to upload
+     * @return Download URL of the uploaded image
+     * @throws IllegalStateException if user is not logged in
+     */
     suspend fun uploadProfileImage(imageUri: Uri): String {
         return withContext(Dispatchers.IO) {
             val uid = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
-            // Create a unique file name for the image to prevent overwrites
             val fileName = "${UUID.randomUUID()}.jpg"
             val imageRef = storage.reference.child("profile_pictures/$uid/$fileName")
 
-            // Upload the file
             imageRef.putFile(imageUri).await()
-
-            // Get the public download URL for the uploaded image
             imageRef.downloadUrl.await().toString()
         }
     }

@@ -19,6 +19,17 @@
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
     </fragment>
+    <action
+        android:id="@+id/action_global_feedFragment"
+        app:destination="@id/feedFragment"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_loginFragment"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true" />
 
     <fragment
         android:id="@+id/feedFragment"
@@ -32,6 +43,28 @@
             android:id="@+id/action_feedFragment_to_commentsFragment"
             app:destination="@id/commentsFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.shahar.stoxie.ui.main.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_stockDetailsFragment"
+            app:destination="@id/stockDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/stockDetailsFragment"
+        android:name="com.shahar.stoxie.ui.main.StockDetailsFragment"
+        android:label="Details"
+        tools:layout="@layout/fragment_stock_details">
+        <argument
+            android:name="symbol"
+            app:argType="string" />
+    </fragment>
+
+
     <fragment
         android:id="@+id/portfolioFragment"
         android:name="com.shahar.stoxie.ui.main.PortfolioFragment"
@@ -69,11 +102,5 @@
         android:name="com.shahar.stoxie.ui.main.EditProfileFragment"
         android:label="fragment_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
-
-    <action
-        android:id="@+id/action_global_feedFragment"
-        app:destination="@id/feedFragment"
-        app:popUpTo="@id/nav_graph"
-        app:popUpToInclusive="true" />
 
 </navigation>

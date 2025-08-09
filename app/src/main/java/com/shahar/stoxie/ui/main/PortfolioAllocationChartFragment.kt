@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -20,7 +20,7 @@ class PortfolioAllocationChartFragment : Fragment() {
 
     private var _binding: FragmentChartContainerBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: PortfolioViewModel by activityViewModels()
+    private val viewModel: PortfolioViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentChartContainerBinding.inflate(inflater, container, false)

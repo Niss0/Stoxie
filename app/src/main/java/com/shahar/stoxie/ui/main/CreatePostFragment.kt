@@ -11,12 +11,21 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.shahar.stoxie.databinding.FragmentCreatePostBinding
 
+/**
+ * Fragment for creating new social posts.
+ * Provides post composition and publishing functionality.
+ */
 class CreatePostFragment : Fragment() {
 
+    /**
+     * View binding for safe view access.
+     */
     private var _binding: FragmentCreatePostBinding? = null
     private val binding get() = _binding!!
 
-    // Get a reference to our CreatePostViewModel
+    /**
+     * ViewModel for post creation business logic and state management.
+     */
     private val viewModel: CreatePostViewModel by viewModels()
 
     override fun onCreateView(
@@ -30,13 +39,26 @@ class CreatePostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set the click listener for the publish button
+        setupClickListeners()
+        observeViewModel()
+    }
+
+    /**
+     * Sets up click listeners for user interactions.
+     * Handles post publishing from input field.
+     */
+    private fun setupClickListeners() {
         binding.btnCreatePostPublish.setOnClickListener {
             val postText = binding.etCreatePostContent.text.toString().trim()
             viewModel.onPublishClicked(postText)
         }
+    }
 
-        // Observe the state from the ViewModel to update the UI
+    /**
+     * Observes ViewModel LiveData for UI updates.
+     * Handles post creation state changes and navigation.
+     */
+    private fun observeViewModel() {
         viewModel.createPostState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CreatePostState.Loading -> {
@@ -44,16 +66,13 @@ class CreatePostFragment : Fragment() {
                     binding.btnCreatePostPublish.isEnabled = false
                 }
                 is CreatePostState.Success -> {
-                    // When the post is created successfully, show a toast and navigate back.
                     Toast.makeText(context, "Post published!", Toast.LENGTH_SHORT).show()
-                    // findNavController().popBackStack() is the standard way to go back to the previous screen.
                     findNavController().popBackStack()
                 }
                 is CreatePostState.Error -> {
                     binding.pbCreatePostLoading.isVisible = false
                     binding.btnCreatePostPublish.isEnabled = true
                     Toast.makeText(context, "Error: ${state.message}", Toast.LENGTH_LONG).show()
-                    // Reset the state so the user can try again
                     viewModel.onStateHandled()
                 }
                 is CreatePostState.Idle -> {
@@ -66,6 +85,6 @@ class CreatePostFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        _binding = null // Prevent memory leaks
     }
 }

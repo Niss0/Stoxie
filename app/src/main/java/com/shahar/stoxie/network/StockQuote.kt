@@ -3,25 +3,36 @@ package com.shahar.stoxie.network
 import com.google.gson.annotations.SerializedName
 
 /**
- * Represents the data structure for a stock quote from the Finnhub API.
- * The @SerializedName annotation is used by Gson to map the JSON key
- * from the API response to the corresponding field in our Kotlin class.
+ * Real-time stock quote data from Finnhub API.
+ * Maps JSON response fields to Kotlin properties using @SerializedName.
  */
 data class StockQuote(
 
-    // Maps the "c" key (Current price) from JSON to our "currentPrice" field
+    /**
+     * Current market price.
+     * Maps to "c" field in API response.
+     */
     @SerializedName("c")
     val currentPrice: Double,
 
-    // Maps the "d" key (Change) from JSON
+    /**
+     * Absolute price change from previous close.
+     * Maps to "d" field in API response.
+     */
     @SerializedName("d")
     val change: Double,
 
-    // Maps the "dp" key (Percent change) from JSON
+    /**
+     * Percentage change from previous close.
+     * Maps to "dp" field in API response.
+     */
     @SerializedName("dp")
     val percentChange: Double,
 
-    // Maps the "pc" key (Previous close price) from JSON
+    /**
+     * Previous day's closing price.
+     * Maps to "pc" field in API response.
+     */
     @SerializedName("pc")
-val previousClose: Double
+    val previousClose: Double
 )

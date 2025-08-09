@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.shahar.stoxie.R
@@ -18,7 +18,7 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ProfileViewModel by activityViewModels()
+    private val viewModel: ProfileViewModel by viewModels()
 
     private lateinit var postAdapter: PostAdapter
 
@@ -37,8 +37,9 @@ class ProfileFragment : Fragment() {
 
         // Handle Logout
         binding.btnProfileLogout.setOnClickListener {
+            // Clear all ViewModel data before logout
             viewModel.logout()
-            findNavController().navigate(R.id.loginFragment)
+            findNavController().navigate(R.id.action_global_loginFragment)
         }
 
         // Handle Edit Profile Navigation
@@ -76,6 +77,12 @@ class ProfileFragment : Fragment() {
             }
             postAdapter.submitList(uiModels)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh user data when returning from edit profile
+        viewModel.refreshUser()
     }
 
     private fun setupRecyclerView() {

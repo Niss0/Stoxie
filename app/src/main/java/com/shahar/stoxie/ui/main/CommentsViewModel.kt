@@ -10,7 +10,10 @@ import com.shahar.stoxie.data.PostRepository
 import com.shahar.stoxie.models.Comment
 import kotlinx.coroutines.launch
 
-// Define the states for the add comment operation
+/**
+ * States for comment addition operations.
+ * Manages UI feedback during comment posting process.
+ */
 sealed class AddCommentState {
     object Idle : AddCommentState()
     object Loading : AddCommentState()
@@ -26,15 +29,23 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
 
     private val postRepository = PostRepository()
 
-    // Get a real-time stream of comments for the given postId and expose it as LiveData.
+    /**
+     * Real-time stream of comments for the specified post.
+     * Converts Flow to LiveData for UI observation.
+     */
     val comments: LiveData<List<Comment>> = postRepository.getCommentsForPost(postId).asLiveData()
 
-    // LiveData to hold the state of the "add comment" operation.
+    /**
+     * State management for comment addition operations.
+     * Provides UI feedback during posting process.
+     */
     private val _addCommentState = MutableLiveData<AddCommentState>(AddCommentState.Idle)
     val addCommentState: LiveData<AddCommentState> = _addCommentState
 
     /**
-     * Called when the user clicks the send button.
+     * Handles comment submission from UI.
+     * Validates input and manages state transitions during posting.
+     * @param commentText The comment text to post
      */
     fun onSendCommentClicked(commentText: String) {
         if (commentText.isBlank()) {
@@ -54,7 +65,8 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
     }
 
     /**
-     * Resets the add comment state after it has been handled by the UI.
+     * Resets comment state after UI has processed the result.
+     * Called by Fragment to clear success/error states.
      */
     fun onStateHandled() {
         _addCommentState.value = AddCommentState.Idle
@@ -62,8 +74,8 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
 }
 
 /**
- * A ViewModelProvider.Factory for creating a CommentsViewModel with a postId.
- * This is the standard pattern for passing arguments to a ViewModel's constructor.
+ * Factory for creating CommentsViewModel with required postId parameter.
+ * Enables dependency injection for ViewModel constructor arguments.
  */
 class CommentsViewModelFactory(private val postId: String) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

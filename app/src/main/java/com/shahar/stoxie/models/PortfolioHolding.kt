@@ -1,17 +1,14 @@
 package com.shahar.stoxie.models
 
 /**
- * Represents a single holding (a specific stock) within a user's portfolio.
- *
- * These objects would be stored in a sub-collection under each User.
- * For example: /users/{userId}/portfolio/{holdingId}
- *
- * @property symbol The stock ticker symbol, e.g., "AAPL". This is the primary identifier.
- * @property shares The number of shares the user owns. A Double allows for fractional shares.
- * @property averageBuyPrice The average price the user paid per share.
- * @property companyName The full name of the company, e.g., "Apple Inc.". We can fetch this once when the user adds the stock.
+ * Represents a stock holding in user's portfolio.
+ * Stored in Firestore under /users/{userId}/portfolio/{symbol}
+ * 
+ * @property symbol Stock ticker symbol (e.g., "AAPL")
+ * @property shares Number of shares owned (supports fractional shares)
+ * @property averageBuyPrice Average cost per share
+ * @property companyName Company display name
  */
-
 data class PortfolioHolding(
     val symbol: String = "",
     val shares: Double = 0.0,
