@@ -1,7 +1,7 @@
 # 📈 Stoxie - Social Stock Portfolio Tracker
 
 <div align="center">
-  <img src="assets/app_logo.png" alt="Stoxie Logo" width="120" height="120"/>
+  <img src="https://img.shields.io/badge/📈-Stoxie-00E676?style=for-the-badge&labelColor=1a1a1a&color=00E676" alt="Stoxie Logo" height="60"/>
   
   ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
   ![Kotlin](https://img.shields.io/badge/Kotlin-0095D5?style=for-the-badge&logo=kotlin&logoColor=white)
@@ -21,10 +21,10 @@
 
 <div align="center">
   <a href="https://youtube.com/shorts/b9AgZZFTpn4?feature=share">
-    <img src="assets/AppDemo.mp4" alt="Demo Video" width="600"/>
+    <img src="https://img.youtube.com/vi/b9AgZZFTpn4/maxresdefault.jpg" alt="Stoxie App Demo - Click to Watch" width="600"/>
   </a>
   <br>
-  <em>Click to watch on YouTube</em>
+  <em>🎬 Click the thumbnail above to watch the full demo on YouTube</em>
 </div>
 
 ---
@@ -303,29 +303,6 @@ GET /query?function=TIME_SERIES_INTRADAY&interval=5min&symbol=AAPL&apikey=API_KE
 
 ---
 
-## 🧪 Testing
-
-### **Run Tests**
-
-```bash
-# Unit Tests
-./gradlew test
-
-# Instrumented Tests
-./gradlew connectedAndroidTest
-
-# Test Coverage
-./gradlew jacocoTestReport
-```
-
-### **Testing Strategy**
-
-- **Unit Tests**: Repository and ViewModel logic
-- **Integration Tests**: API communication and data flow
-- **UI Tests**: Critical user journeys using Espresso
-
----
-
 ## 🚀 Future Enhancements
 
 - [ ] **Push Notifications** - Stock alerts and social notifications
@@ -369,9 +346,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-**Developer**: [Shahar Nissim](mailto:shahar.nissim@example.com)
-**LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-**Portfolio**: [Your Portfolio Website](https://yourwebsite.com)
+**Mail**: [Send Email](mailto:nissim2911@gmail.com)
+**LinkedIn**: [Shahar Nissim](https://www.linkedin.com/in/nissim-shahar/)
 
 ---
 
