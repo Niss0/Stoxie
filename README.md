@@ -17,7 +17,7 @@
 
 ## 📱 Demo Video
 
-> **📺 [Watch the full app demonstration on YouTube](https://youtube.com/shorts/b9AgZZFTpn4?feature=share)**
+> **📺 [Watch the full app demonstration on YouTube](https://youtube.com/shorts/mEkX5mZoS8s?feature=share)**
 
 <div align="center">
   <a href="https://youtube.com/shorts/b9AgZZFTpn4?feature=share">
